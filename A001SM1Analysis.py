@@ -13,11 +13,15 @@ import matplotlib.pyplot as plt
 from getIndexes import getIndexes
 import seaborn as sn
 import numpy as np
+import os
 
 #OPEN AND CLEAN DATA
 df = pd.read_csv("A001SM1_1.csv")
 df.shape
 data = df.iloc[:,3:]
+
+fileList = [f for f in os.listdir('.') if re.match('.*.csv',f)]
+print(fileList)
 
 # #PLOT DATA
 # #graph of each channel, mHz per time
@@ -45,12 +49,12 @@ data = df.iloc[:,3:]
 #channel where max response is seen
 listMax = data.max(0)
 dataMax = listMax.max()
-# print('Channel for maximum value: ', list(listMax[listMax==dataMax]This.index))
-
+print('Channel for max voltage {}, {} Hz.'.format(listMax[listMax==dataMax].index.value, dataMax))
 
 #time the max happens for each channel
 channelTimeOfMax = getIndexes(data,listMax)
 channelTimeOfMax.sort()
+print('Channel time max : ', channelTimeOfMax)
 
 # #Channels mean voltage distribution
 # fig = plt.figure()
@@ -59,13 +63,24 @@ channelTimeOfMax.sort()
 # plt.xlabel('mHz')
 
 
-#STATISTICAL ANALYSIS
+#MIN AND MAX CORRELATION
 correlMatrix = data.corr().where(np.tril(np.ones(data.corr().shape),-1).astype(np.bool))
-sn.heatmap(correlMatrix)
-plt.show()
-print('Correlation matrix triled: \n', correlMatrix)
+# sn.heatmap(correlMatrix)
+# plt.show()
+# print('Correlation matrix triled: \n', correlMatrix, "\n")
 
-correlMatrixMax =pd.DataFrame({'Max' : correlMatrix.max(0), 'Index of max' : correlMatrix.idxmax(0)})
-correlMatrixMin =pd.DataFrame({'Min' : correlMatrix.min(0), 'Index of min' : correlMatrix.idxmin(0)})
-print('Correlation matrix min: \n', correlMatrixMin)
-print('Correlation matrix max: \n', correlMatrixMax)
+maxCorrelations =pd.DataFrame({'Max' : correlMatrix.max(0), 'Electrode1' : correlMatrix.idxmax(0)})
+minCorrelations =pd.DataFrame({'Min' : correlMatrix.min(0), 'Electrode1' : correlMatrix.idxmin(0)})
+maxCorrelations['Electrode2'] = maxCorrelations.index
+minCorrelations['Electrode2'] = minCorrelations.index
+# print('Correlation matrix max: \n', maxCorrelations, "\n")
+# print('Correlation matrix min: \n', minCorrelations, "\n")
+
+minCorrelation = minCorrelations['Min'].idxmin(skipna=True)
+minCorrData = minCorrelations.loc[minCorrelation]
+# minCorrData.name = filename
+print("Min corr data : \n", minCorrData, "\n")
+
+maxCorrelation = maxCorrelations['Max'].idxmax(skipna=True)
+maxCorrData = maxCorrelations.loc[maxCorrelation]
+print("Max corr data : \n", maxCorrData, "\n")
