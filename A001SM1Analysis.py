@@ -49,7 +49,8 @@ print('Channel for maximum value: ', list(listMax[listMax==dataMax].index))
 channelTimeOfMax = getIndexes(data,listMax)
 channelTimeOfMax.sort()
 
-#mean of each channel
+#Channels mean voltage distribution
+fig = plt.figure()
 plt.hist(data.mean(0))
 plt.title('Channels mean voltage distribution')
 plt.xlabel('mHz')
