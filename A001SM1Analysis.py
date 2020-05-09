@@ -15,13 +15,13 @@ import seaborn as sn
 import numpy as np
 import os
 
-#OPEN AND CLEAN DATA
-df = pd.read_csv("A001SM1_1.csv")
-df.shape
-data = df.iloc[:,3:]
-
 fileList = [f for f in os.listdir('.') if re.match('.*.csv',f)]
 print(fileList)
+
+#OPEN AND CLEAN DATA
+df = pd.read_csv("A002SM1_1.csv")
+df.shape
+data = df.iloc[:,3:]
 
 # #PLOT DATA
 # #graph of each channel, mHz per time
@@ -45,16 +45,19 @@ print(fileList)
 # plt.ylabel('mHz')
 # plt.legend()
 
-#EXTREME VALUES AND CENTRAL TENDENCY
-#channel where max response is seen
-listMax = data.max(0)
-dataMax = listMax.max()
-print('Channel for max voltage {}, {} Hz.'.format(listMax[listMax==dataMax].index.value, dataMax))
+#MAX PEAK
+def maxPeak(df):
+    listMax = pd.DataFrame(df.max(0))
+    listMax['Channel'] = listMax.index
+    print('Max peak and channel : \n', listMax[listMax[0]==listMax[0].max()].values.tolist(), '\n')
+    return(listMax[listMax[0]==listMax[0].max()].values.tolist())
+
+
 
 #time the max happens for each channel
-channelTimeOfMax = getIndexes(data,listMax)
-channelTimeOfMax.sort()
-print('Channel time max : ', channelTimeOfMax)
+# channelTimeOfMax = getIndexes(data,listMax)
+# channelTimeOfMax.sort()
+# print('Channel time max : ', channelTimeOfMax)
 
 # #Channels mean voltage distribution
 # fig = plt.figure()
@@ -79,8 +82,8 @@ minCorrelations['Electrode2'] = minCorrelations.index
 minCorrelation = minCorrelations['Min'].idxmin(skipna=True)
 minCorrData = minCorrelations.loc[minCorrelation]
 # minCorrData.name = filename
-print("Min corr data : \n", minCorrData, "\n")
+# print("Min corr data : \n", minCorrData, "\n")
 
 maxCorrelation = maxCorrelations['Max'].idxmax(skipna=True)
 maxCorrData = maxCorrelations.loc[maxCorrelation]
-print("Max corr data : \n", maxCorrData, "\n")
+# print("Max corr data : \n", maxCorrData, "\n")
